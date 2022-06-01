@@ -48,7 +48,7 @@ class Object3D:
         # normalize
         vertexes /= vertexes[:, -1].reshape(-1, 1)
         # clip
-        vertexes[(vertexes > 1) | (vertexes < -1)] = 0
+        vertexes[(vertexes > 2) | (vertexes < -2)] = 0
         # project to screen
         vertexes = vertexes @ self.render.projection.to_screen_matrix
         # get screen X and Y
