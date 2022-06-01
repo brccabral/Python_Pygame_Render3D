@@ -25,8 +25,8 @@ class Camera:
         self.far_plane = 100
 
         # movement
-        self.moving_speed = 40
-        self.rotation_speed = 20
+        self.moving_speed = 1.2
+        self.rotation_speed = 0.5
 
     def control(self, dt):
         key = pygame.key.get_pressed()
