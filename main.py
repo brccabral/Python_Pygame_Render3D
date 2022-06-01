@@ -25,6 +25,7 @@ class GameWindow:
         self.camera = Camera(self, [-5, 5, -50])
         self.projection = Projection(self)
         self.object = self.get_object_from_file("assets/tank_T-34-85/t_34_obj.obj")
+        self.object.draw_vertices = False  # increases fps
         # self.create_axes_and_cube()
 
     def create_axes_and_cube(self):

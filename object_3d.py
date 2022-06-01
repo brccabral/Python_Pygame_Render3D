@@ -10,17 +10,17 @@ if TYPE_CHECKING:
 
 
 class Object3D:
-    def __init__(self, render: GameWindow, vertexes, faces):
+    def __init__(self, render: GameWindow, vertices, faces):
         self.render = render
-        # position of cube vertexes
-        self.vertexes = np.array([np.array(v) for v in vertexes])
+        # position of cube vertices
+        self.vertices = np.array([np.array(v) for v in vertices])
         # list of tuples that contains vertices indexes
         self.faces = np.array([np.array(f) for f in faces])
 
         self.font = pygame.font.SysFont("Arial", 30, bold=True)
         self.color_faces = [(pygame.Color("orange"), face) for face in self.faces]
         self.movement_flag = True
-        self.draw_vertexes = True
+        self.draw_vertices = True
         self.label = ""
 
     def draw(self):
@@ -33,22 +33,22 @@ class Object3D:
 
     def screen_projection(self):
         # transfer to camera space
-        vertexes = self.vertexes @ self.render.camera.camera_matrix()
+        vertices = self.vertices @ self.render.camera.camera_matrix()
         # transfer to clip space
-        vertexes = vertexes @ self.render.projection.projection_matrix
+        vertices = vertices @ self.render.projection.projection_matrix
         # normalize
-        vertexes /= vertexes[:, -1].reshape(-1, 1)
+        vertices /= vertices[:, -1].reshape(-1, 1)
         # clip
-        vertexes[(vertexes > 2) | (vertexes < -2)] = 0
+        vertices[(vertices > 2) | (vertices < -2)] = 0
         # project to screen
-        vertexes = vertexes @ self.render.projection.to_screen_matrix
+        vertices = vertices @ self.render.projection.to_screen_matrix
         # get screen X and Y
-        vertexes = vertexes[:, :2]
+        vertices = vertices[:, :2]
 
-        # clipped vertexes will be on screen center, do not draw them
+        # clipped vertices will be on screen center, do not draw them
         for index, color_face in enumerate(self.color_faces):
             color, face = color_face
-            polygon = vertexes[face]
+            polygon = vertices[face]
             if not np.any(
                 (polygon == self.render.center_width)
                 | (polygon == self.render.center_height)
@@ -60,8 +60,8 @@ class Object3D:
                     )
                     self.render.screen.blit(text, polygon[-1])
 
-        if self.draw_vertexes:
-            for vertex in vertexes:
+        if self.draw_vertices:
+            for vertex in vertices:
                 if not np.any(
                     (vertex == self.render.center_width)
                     | (vertex == self.render.center_height)
@@ -76,19 +76,19 @@ class Object3D:
     #  a = dot(a, b)
 
     def translate(self, pos):
-        self.vertexes = self.vertexes @ translate(pos)
+        self.vertices = self.vertices @ translate(pos)
 
     def scale(self, n):
-        self.vertexes = self.vertexes @ scale(n)
+        self.vertices = self.vertices @ scale(n)
 
     def rotate_x(self, alpha):
-        self.vertexes = self.vertexes @ rotate_x(alpha)
+        self.vertices = self.vertices @ rotate_x(alpha)
 
     def rotate_y(self, alpha):
-        self.vertexes = self.vertexes @ rotate_y(alpha)
+        self.vertices = self.vertices @ rotate_y(alpha)
 
     def rotate_z(self, alpha):
-        self.vertexes = self.vertexes @ rotate_z(alpha)
+        self.vertices = self.vertices @ rotate_z(alpha)
 
 
 # draw only axes edges
@@ -111,7 +111,7 @@ class Axes(Object3D):
         self.color_faces = [
             (color, face) for color, face in zip(self.colors, self.faces)
         ]
-        self.draw_vertexes = False
+        self.draw_vertices = False
         self.label = "XYZ"
 
 
