@@ -1,8 +1,7 @@
-import math
 import time
 import pygame
 import sys
-from object_3d import Object3D
+from object_3d import Axes, Object3D
 from camera import Camera
 from projection import Projection
 
@@ -26,11 +25,22 @@ class GameWindow:
         self.projection = Projection(self)
         self.object = Object3D(self)
         self.object.translate([0.2, 0.4, 0.2])
-        self.object.rotate_y(math.pi / 6)
+
+        # draw axes XYZ in cube projection
+        self.axes = Axes(self)
+        self.axes.translate([0.7, 0.9, 0.7])
+
+        # draw world XYZ axes
+        self.world_axes = Axes(self)
+        self.world_axes.movement_flag = False
+        self.world_axes.scale(2.5)
+        self.world_axes.translate([0.0001, 0.0001, 0.0001])
 
     def draw(self):
         self.screen.fill(pygame.Color("darkslategray"))
         self.object.draw()
+        self.axes.draw()
+        self.world_axes.draw()
 
     def run(self):
         self.dt = time.time() - self.last_time

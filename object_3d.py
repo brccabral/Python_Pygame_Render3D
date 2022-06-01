@@ -37,12 +37,19 @@ class Object3D:
             ]
         )
 
+        self.font = pygame.font.SysFont("Arial", 30, bold=True)
+        self.color_faces = [(pygame.Color("orange"), face) for face in self.faces]
+        self.movement_flag = True
+        self.draw_vertexes = True
+        self.label = ""
+
     def draw(self):
         self.screen_projection()
         self.movement()
 
     def movement(self):
-        self.rotate_y(pygame.time.get_ticks() % 0.005)
+        if self.movement_flag:
+            self.rotate_y(pygame.time.get_ticks() % 0.005)
 
     def screen_projection(self):
         # transfer to camera space
@@ -59,22 +66,29 @@ class Object3D:
         vertexes = vertexes[:, :2]
 
         # clipped vertexes will be on screen center, do not draw them
-        for face in self.faces:
+        for index, color_face in enumerate(self.color_faces):
+            color, face = color_face
             polygon = vertexes[face]
             if not np.any(
                 (polygon == self.render.center_width)
                 | (polygon == self.render.center_height)
             ):
-                pygame.draw.polygon(
-                    self.render.screen, pygame.Color("orange"), polygon, 3
-                )
+                pygame.draw.polygon(self.render.screen, color, polygon, 3)
+                if self.label:
+                    text = self.font.render(
+                        self.label[index], True, pygame.Color("white")
+                    )
+                    self.render.screen.blit(text, polygon[-1])
 
-        for vertex in vertexes:
-            if not np.any(
-                (vertex == self.render.center_width)
-                | (vertex == self.render.center_height)
-            ):
-                pygame.draw.circle(self.render.screen, pygame.Color("white"), vertex, 6)
+        if self.draw_vertexes:
+            for vertex in vertexes:
+                if not np.any(
+                    (vertex == self.render.center_width)
+                    | (vertex == self.render.center_height)
+                ):
+                    pygame.draw.circle(
+                        self.render.screen, pygame.Color("white"), vertex, 6
+                    )
 
     # @ operator = a.__matmul__(b)
     #  or dot(a, b)
@@ -95,3 +109,30 @@ class Object3D:
 
     def rotate_z(self, alpha):
         self.vertexes = self.vertexes @ rotate_z(alpha)
+
+
+# draw only axes edges
+class Axes(Object3D):
+    def __init__(self, render: GameWindow):
+        super().__init__(render)
+        self.vertexes = np.array(
+            [
+                (0, 0, 0, 1),
+                (1, 0, 0, 1),
+                (0, 1, 0, 1),
+                (0, 0, 1, 1),
+            ]
+        )
+        self.faces = np.array(
+            [
+                (0, 1),
+                (0, 2),
+                (0, 3),
+            ]
+        )
+        self.colors = [pygame.Color("red"), pygame.Color("green"), pygame.Color("blue")]
+        self.color_faces = [
+            (color, face) for color, face in zip(self.colors, self.faces)
+        ]
+        self.draw_vertexes = False
+        self.label = "XYZ"
