@@ -37,6 +37,7 @@ class GameWindow:
         self.last_time = time.time()
         while True:
             self.draw()
+            self.camera.control(self.dt)
             for event in pygame.event.get([pygame.QUIT]):
                 if event.type == pygame.QUIT:
                     pygame.quit()

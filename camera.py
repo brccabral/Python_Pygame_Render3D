@@ -1,6 +1,7 @@
 from __future__ import annotations
 import math
 import numpy as np
+import pygame
 
 from typing import TYPE_CHECKING
 
@@ -21,6 +22,25 @@ class Camera:
         # clip distance
         self.near_plane = 0.1
         self.far_plane = 100
+
+        # movement
+        self.moving_speed = 40
+        self.rotation_speed = 20
+
+    def control(self, dt):
+        key = pygame.key.get_pressed()
+        if key[pygame.K_a]:
+            self.position -= self.right * self.moving_speed * dt
+        if key[pygame.K_d]:
+            self.position += self.right * self.moving_speed * dt
+        if key[pygame.K_w]:
+            self.position += self.forward * self.moving_speed * dt
+        if key[pygame.K_s]:
+            self.position -= self.forward * self.moving_speed * dt
+        if key[pygame.K_q]:
+            self.position += self.up * self.moving_speed * dt
+        if key[pygame.K_e]:
+            self.position -= self.up * self.moving_speed * dt
 
     def translate_matrix(self):
         x, y, z, w = self.position
