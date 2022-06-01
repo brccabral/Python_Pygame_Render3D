@@ -5,7 +5,14 @@ import numpy as np
 def translate(pos):
     tx, ty, tx = pos
 
-    return np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [tx, ty, tx, 1]])
+    return np.array(
+        [
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+            [tx, ty, tx, 1],
+        ]
+    )
 
 
 def rotate_x(alpha):
