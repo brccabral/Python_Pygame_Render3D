@@ -2,11 +2,18 @@ from __future__ import annotations
 import numpy as np
 import pygame
 from matrix_functions import translate, rotate_x, rotate_y, rotate_z, scale
+from numba import njit
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from main import GameWindow
+
+
+# this increases fps
+@njit(fastmath=True)
+def any_func(arr, a, b):
+    return np.any((arr == a) | (arr == b))
 
 
 class Object3D:
@@ -49,10 +56,7 @@ class Object3D:
         for index, color_face in enumerate(self.color_faces):
             color, face = color_face
             polygon = vertices[face]
-            if not np.any(
-                (polygon == self.render.center_width)
-                | (polygon == self.render.center_height)
-            ):
+            if not any_func(polygon, self.render.center_width, self.render.center_height):
                 pygame.draw.polygon(self.render.screen, color, polygon, 1)
                 if self.label:
                     text = self.font.render(
@@ -62,10 +66,7 @@ class Object3D:
 
         if self.draw_vertices:
             for vertex in vertices:
-                if not np.any(
-                    (vertex == self.render.center_width)
-                    | (vertex == self.render.center_height)
-                ):
+                if not any_func(vertex, self.render.center_width, self.render.center_height):
                     pygame.draw.circle(
                         self.render.screen, pygame.Color("white"), vertex, 2
                     )

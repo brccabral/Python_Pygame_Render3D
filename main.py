@@ -16,7 +16,7 @@ class GameWindow:
         self.clock = pygame.time.Clock()
         self.last_time = time.time()
         self.dt = 0
-        self.fps = 60
+        self.fps = 120
 
         self.axes = None
         self.create_objects()
