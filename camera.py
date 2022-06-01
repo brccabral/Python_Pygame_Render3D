@@ -1,9 +1,15 @@
+from __future__ import annotations
 import math
 import numpy as np
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from main import GameWindow
+
 
 class Camera:
-    def __init__(self, render, position):
+    def __init__(self, render: GameWindow, position):
         self.render = render
         self.position = np.array([*position, 1.0])
         self.forward = np.array([0, 0, 1, 1])
@@ -14,7 +20,7 @@ class Camera:
         self.v_fov = self.h_fov * (render.height / render.width)
         # clip distance
         self.near_plane = 0.1
-        self.far_plane
+        self.far_plane = 100
 
     def translate_matrix(self):
         x, y, z, w = self.position
@@ -33,9 +39,9 @@ class Camera:
         ux, uy, uz, w = self.up
         return np.array(
             [
-                [rx, fx, ux, 0],
-                [ry, fy, uy, 0],
-                [rz, fz, uz, 0],
+                [rx, ux, fx, 0],
+                [ry, uy, fy, 0],
+                [rz, uz, fz, 0],
                 [0, 0, 0, 1],
             ]
         )

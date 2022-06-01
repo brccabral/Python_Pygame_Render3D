@@ -1,10 +1,16 @@
+from __future__ import annotations
 import numpy as np
 import pygame
 from matrix_functions import translate, rotate_x, rotate_y, rotate_z, scale
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from main import GameWindow
+
 
 class Object3D:
-    def __init__(self, render):
+    def __init__(self, render: GameWindow):
         self.render = render
         # position of cube vertexes
         self.vertexes = np.array(

@@ -1,7 +1,10 @@
+import math
 import time
 import pygame
 import sys
 from object_3d import Object3D
+from camera import Camera
+from projection import Projection
 
 
 class GameWindow:
@@ -19,10 +22,15 @@ class GameWindow:
         self.create_objects()
 
     def create_objects(self):
+        self.camera = Camera(self, [0.5, 1, -4])
+        self.projection = Projection(self)
         self.object = Object3D(self)
+        self.object.translate([0.2, 0.4, 0.2])
+        self.object.rotate_y(math.pi / 6)
 
     def draw(self):
         self.screen.fill(pygame.Color("darkslategray"))
+        self.object.draw()
 
     def run(self):
         self.dt = time.time() - self.last_time
