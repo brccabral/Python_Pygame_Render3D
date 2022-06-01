@@ -1,4 +1,5 @@
 import numpy as np
+import pygame
 from matrix_functions import translate, rotate_x, rotate_y, rotate_z, scale
 
 
@@ -29,6 +30,41 @@ class Object3D:
                 (0, 3, 7, 4),
             ]
         )
+
+    def draw(self):
+        self.screen_projection()
+
+    def screen_projection(self):
+        # transfer to camera space
+        vertexes = self.vertexes @ self.render.camera.camera_matrix()
+        # transfer to clip space
+        vertexes = vertexes @ self.render.projection.projection_matrix
+        # normalize
+        vertexes /= vertexes[:, -1].reshape(-1, 1)
+        # clip
+        vertexes[(vertexes > 1) | (vertexes < -1)] = 0
+        # project to screen
+        vertexes = vertexes @ self.render.projection.to_screen_matrix
+        # get screen X and Y
+        vertexes = vertexes[:, :2]
+
+        # clipped vertexes will be on screen center, do not draw them
+        for face in self.faces:
+            polygon = vertexes[face]
+            if not np.any(
+                (polygon == self.render.center_width)
+                | (polygon == self.render.center_height)
+            ):
+                pygame.draw.polygon(
+                    self.render.screen, pygame.Color("orange"), polygon, 3
+                )
+
+        for vertex in vertexes:
+            if not np.any(
+                (vertex == self.render.center_width)
+                | (vertex == self.render.center_height)
+            ):
+                pygame.draw.circle(self.render.screen, pygame.Color("white"), vertex, 6)
 
     # @ operator = a.__matmul__(b)
     #  or dot(a, b)
