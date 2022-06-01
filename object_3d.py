@@ -39,6 +39,10 @@ class Object3D:
 
     def draw(self):
         self.screen_projection()
+        self.movement()
+
+    def movement(self):
+        self.rotate_y(pygame.time.get_ticks() % 0.005)
 
     def screen_projection(self):
         # transfer to camera space
