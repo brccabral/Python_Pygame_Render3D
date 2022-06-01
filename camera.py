@@ -2,6 +2,7 @@ from __future__ import annotations
 import math
 import numpy as np
 import pygame
+from matrix_functions import rotate_x, rotate_y
 
 from typing import TYPE_CHECKING
 
@@ -41,6 +42,28 @@ class Camera:
             self.position += self.up * self.moving_speed * dt
         if key[pygame.K_e]:
             self.position -= self.up * self.moving_speed * dt
+
+        # rotation
+        if key[pygame.K_LEFT]:
+            self.camera_yaw(-self.rotation_speed * dt)
+        if key[pygame.K_RIGHT]:
+            self.camera_yaw(self.rotation_speed * dt)
+        if key[pygame.K_DOWN]:
+            self.camera_pitch(-self.rotation_speed * dt)
+        if key[pygame.K_UP]:
+            self.camera_pitch(self.rotation_speed * dt)
+
+    def camera_yaw(self, angle):
+        rotate = rotate_y(angle)
+        self.forward = self.forward @ rotate
+        self.right = self.right @ rotate
+        self.up = self.up @ rotate
+
+    def camera_pitch(self, angle):
+        rotate = rotate_x(angle)
+        self.forward = self.forward @ rotate
+        self.right = self.right @ rotate
+        self.up = self.up @ rotate
 
     def translate_matrix(self):
         x, y, z, w = self.position
