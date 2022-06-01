@@ -10,32 +10,12 @@ if TYPE_CHECKING:
 
 
 class Object3D:
-    def __init__(self, render: GameWindow):
+    def __init__(self, render: GameWindow, vertexes, faces):
         self.render = render
         # position of cube vertexes
-        self.vertexes = np.array(
-            [
-                (0, 0, 0, 1),
-                (0, 1, 0, 1),
-                (1, 1, 0, 1),
-                (1, 0, 0, 1),
-                (0, 0, 1, 1),
-                (0, 1, 1, 1),
-                (1, 1, 1, 1),
-                (1, 0, 1, 1),
-            ]
-        )
+        self.vertexes = np.array([np.array(v) for v in vertexes])
         # list of tuples that contains vertices indexes
-        self.faces = np.array(
-            [
-                (0, 1, 2, 3),
-                (4, 5, 6, 7),
-                (0, 4, 5, 1),
-                (2, 3, 7, 6),
-                (1, 2, 6, 5),
-                (0, 3, 7, 4),
-            ]
-        )
+        self.faces = np.array([np.array(f) for f in faces])
 
         self.font = pygame.font.SysFont("Arial", 30, bold=True)
         self.color_faces = [(pygame.Color("orange"), face) for face in self.faces]
@@ -73,7 +53,7 @@ class Object3D:
                 (polygon == self.render.center_width)
                 | (polygon == self.render.center_height)
             ):
-                pygame.draw.polygon(self.render.screen, color, polygon, 3)
+                pygame.draw.polygon(self.render.screen, color, polygon, 1)
                 if self.label:
                     text = self.font.render(
                         self.label[index], True, pygame.Color("white")
@@ -87,7 +67,7 @@ class Object3D:
                     | (vertex == self.render.center_height)
                 ):
                     pygame.draw.circle(
-                        self.render.screen, pygame.Color("white"), vertex, 6
+                        self.render.screen, pygame.Color("white"), vertex, 2
                     )
 
     # @ operator = a.__matmul__(b)
@@ -114,25 +94,45 @@ class Object3D:
 # draw only axes edges
 class Axes(Object3D):
     def __init__(self, render: GameWindow):
-        super().__init__(render)
-        self.vertexes = np.array(
-            [
-                (0, 0, 0, 1),
-                (1, 0, 0, 1),
-                (0, 1, 0, 1),
-                (0, 0, 1, 1),
-            ]
-        )
-        self.faces = np.array(
-            [
-                (0, 1),
-                (0, 2),
-                (0, 3),
-            ]
-        )
+        verts = [
+            (0, 0, 0, 1),
+            (1, 0, 0, 1),
+            (0, 1, 0, 1),
+            (0, 0, 1, 1),
+        ]
+        faces = [
+            (0, 1),
+            (0, 2),
+            (0, 3),
+        ]
+        super().__init__(render, verts, faces)
+
         self.colors = [pygame.Color("red"), pygame.Color("green"), pygame.Color("blue")]
         self.color_faces = [
             (color, face) for color, face in zip(self.colors, self.faces)
         ]
         self.draw_vertexes = False
         self.label = "XYZ"
+
+
+class Cube(Object3D):
+    def __init__(self, render: GameWindow):
+        verts = [
+            (0, 0, 0, 1),
+            (0, 1, 0, 1),
+            (1, 1, 0, 1),
+            (1, 0, 0, 1),
+            (0, 0, 1, 1),
+            (0, 1, 1, 1),
+            (1, 1, 1, 1),
+            (1, 0, 1, 1),
+        ]
+        faces = [
+            (0, 1, 2, 3),
+            (4, 5, 6, 7),
+            (0, 4, 5, 1),
+            (2, 3, 7, 6),
+            (1, 2, 6, 5),
+            (0, 3, 7, 4),
+        ]
+        super().__init__(render, verts, faces)
