@@ -1,6 +1,7 @@
 import time
 import pygame
 import sys
+from object_3d import Object3D
 
 
 class GameWindow:
@@ -14,6 +15,11 @@ class GameWindow:
         self.last_time = time.time()
         self.dt = 0
         self.fps = 60
+
+        self.create_objects()
+
+    def create_objects(self):
+        self.object = Object3D(self)
 
     def draw(self):
         self.screen.fill(pygame.Color("darkslategray"))
