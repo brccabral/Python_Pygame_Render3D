@@ -22,7 +22,10 @@ class Object3D:
         # position of cube vertices
         self.vertices = np.array([np.array(v) for v in vertices])
         # list of tuples that contains vertices indexes
-        self.faces = np.array([np.array(f) for f in faces])
+        # can't add faces with different dimensions
+        # normalize dimensions to 16 padding with NaN
+        # before drawing we need to remove the NaN
+        self.faces = np.array([np.array(f + [np.nan] * (16 - len(f))) for f in faces])
 
         self.font = pygame.font.SysFont("Arial", 30, bold=True)
         self.color_faces = [(pygame.Color("orange"), face) for face in self.faces]
@@ -55,8 +58,11 @@ class Object3D:
         # clipped vertices will be on screen center, do not draw them
         for index, color_face in enumerate(self.color_faces):
             color, face = color_face
-            polygon = vertices[face]
-            if not any_func(polygon, self.render.center_width, self.render.center_height):
+            # remove NaN before selecting the vertices
+            polygon = vertices[face[np.logical_not(np.isnan(face))].astype(np.integer)]
+            if not any_func(
+                polygon, self.render.center_width, self.render.center_height
+            ):
                 pygame.draw.polygon(self.render.screen, color, polygon, 1)
                 if self.label:
                     text = self.font.render(
@@ -66,7 +72,9 @@ class Object3D:
 
         if self.draw_vertices:
             for vertex in vertices:
-                if not any_func(vertex, self.render.center_width, self.render.center_height):
+                if not any_func(
+                    vertex, self.render.center_width, self.render.center_height
+                ):
                     pygame.draw.circle(
                         self.render.screen, pygame.Color("white"), vertex, 2
                     )
